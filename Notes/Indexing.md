@@ -1,6 +1,7 @@
 # Indexing
 
 - ## Ordered indices: Based on sorting the values.
+  - ### Composite Searchkeys: Searchkey containing multiple attributes. ORdering is lexicographical.
 - ## Hash indices: Based on a uniform distibution of values across a range of buckets.
 
 ## Factors:
@@ -42,6 +43,7 @@
     - update sparse index to point to first entry in blocks including and after the one from which the record was deleted. 
 
 #### Update = Deletion, then insertion.
+
 
 ## BTrees
 
@@ -122,3 +124,37 @@
 ```
 Too complex, fuck it.
 ```
+
+### Nonunique searchkeys: 
+- BTree indices makes the searchkey composite by adding a candidate key to the searchkey (is called a uniquifier).
+- Searches are implemented with Range Queries, with the range of the uniquifier being as large as possible.
+
+### File Organisation
+- Store records in leaf nodes instead of pointers to records.
+- In such cases, redistribution after insertion or deletion is modifed to ensure an even split. Allows for > 2/3 occupancy, and redistributes if deletion takes it lower.
+- If BTree secondary index, then stores primary key instead of record. Done to prevent massive pointer correction after merge/split of node. Query required two index-finds.
+
+### Bulk Loading: 
+- Unbuffered record insertion is prohibitive, so write new entries to temporary file, sort the entries(reducing random IO), and then insert in one go.
+- Bottom-up construction: Way we did in DS.
+
+
+## Hashes:
+- Fairly straightforward, hash of value represents which bucket it goes to.
+- For query, just find the write bucket and check all.
+- Insert and delete similarly trivial.
+- No range query.
+- If too many values go to the same bucket, the overflow is handled using an overflow bucket, so each value of the hash can potentially have a linke list of buckets.
+
+## Write-optimised:
+- LSM
+- Buffer tree
+
+## Bitmaps:
+- store a true-false bitstring (eaach bit corresponds to a tuple in the relation) for each possible value of an attribute.
+
+## Spacial/Temporal data
+- kd-Trees
+- kd-BTrees
+- RTrees (for both)
+- Quadtrees
